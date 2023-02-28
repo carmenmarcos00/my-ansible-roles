@@ -1,0 +1,19 @@
+- name: Add Consul GPG key
+  shell: 
+      cmd: curl --fail --silent --show-error --location https://apt.releases.hashicorp.com/gpg | \
+      gpg --dearmor | \
+      sudo dd of=/usr/share/keyrings/hashicorp-archive-keyring.gpg
+      warn: false
+
+- name: Add Consul Repository
+  shell: 
+      cmd: echo "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+      sudo tee -a /etc/apt/sources.list.d/hashicorp.list
+      warn: false
+
+- name: Update apt and install consul
+  apt:
+    name: consul
+    state: latest
+    update_cache: true
+  become: true

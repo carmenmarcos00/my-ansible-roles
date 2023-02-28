@@ -1,0 +1,25 @@
+---
+# File: docker.yml 
+
+- name: Add Docker GPG apt Key
+  shell:
+      cmd: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      warn: false
+
+- name: Add Docker Repository
+  shell:
+      cmd: sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+      warn: false
+
+- name: Update apt and install docker-ce
+  apt:
+    name: docker-ce
+    state: latest
+    update_cache: true
+  become: true
+
+- name: Install Docker Module for Python
+  pip:
+    name: docker
+  become: true
+

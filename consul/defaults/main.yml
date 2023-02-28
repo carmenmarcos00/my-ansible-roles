@@ -1,0 +1,107 @@
+---
+##### Defaults file for consul
+
+### Core
+consul_debug: false
+consul_bootstrap_expect: "3"         # TODO: Not hardcoded
+consul_version: "1.13.2"
+consul_server_number: "2"            # Start = 0
+public_ip_server: "193.146.75.209"   # TODO: Not hardcoded
+
+
+### If latest Consul version has bugs
+consul_latest_bug: true
+
+### Install method. TODO: See where it goes
+consul_force_install: false
+consul_install_remotely: false
+consul_install_from_repo: false
+
+### Paths
+consul_bin_path: "/usr/bin"
+consul_binary: "{{ consul_bin_path }}/consul"
+consul_configd_path: "/etc/consul.d"
+consul_data_path: "/opt/consul"
+consul_service_path: "/etc/systemd/system"
+consul_config_file: "templates/consulhcl.j2"
+consul_server_file: "templates/serverhcl.j2"
+
+##?? 
+consul_bootstrap_state: "{{ consul_config_path }}/.consul_bootstrapped"
+consul_data_path: "/opt/consul"
+consul_run_path: "/run/consul"
+
+
+### Consul.hcl settings
+consul_datacenter: "dc1_ansible_ifca"
+# Created in the creation of the first server. Hardcoded.
+# TODO: Not hardcoded
+encrypt_token: "8zJ+JvZWb1wAW3B/HRGpVGU3vc1PjUYqu5YIUM2xpNI="
+
+# ACL settings
+acl_enabled: true
+acl_default_policy: "deny"
+acl_enable_token_persistency: true
+
+# TLS settings
+# It is created ad-hoc for each server. The main server creates it.
+# It has to be distributed to the rest of the nodes TODO
+tls_ca_file: "{{ consul_configd_path }}/consul-agent-ca.pem"
+tls_cert_file: "{{ consul_configd_path }}/{{ consul_datacenter }}-server-consul-{{ consul_server_number }}.pem"
+tls_key_file: "{{ consul_configd_path }}/{{ consul_datacenter }}-server-consul-{{ consul_server_number }}-key.pem"
+tls_verify_incoming: true
+tls_verify_outgoing: true
+tls_verify_server_hostname: true
+auto_encrypt_allow_tls: true
+#retry_join = [{{ retry_join | map('quote') | join(', ') }}]
+retry_join: "{{ public_ip_server }}"
+
+
+### Addresses
+consul_bind_address: "{{ lookup('env','CONSUL_BIND_ADDRESS') | default(hostvars[inventory_hostname]['ansible_'+ consul_iface | replace('-', '_')]['ipv4']['address'], true) }}"
+consul_advertise_address: "{{ consul_bind_address }}"
+consul_advertise_address_wan: "{{ consul_bind_address }}"
+consul_translate_wan_address: false
+consul_advertise_addresses:
+  serf_lan: "{{ consul_advertise_addresses_serf_lan | default(consul_advertise_address+':'+consul_ports.serf_lan) }}"
+  serf_wan: "{{ consul_advertise_addresses_serf_wan | default(consul_advertise_address_wan+':'+consul_ports.serf_wan) }}"
+  rpc: "{{ consul_advertise_addresses_rpc | default(consul_bind_address+':'+consul_ports.server) }}"
+consul_client_address: '127.0.0.1'
+consul_addresses:
+  dns: "{{ consul_addresses_dns | default(consul_client_address, true) }}"
+  http: "{{ consul_addresses_http | default(consul_client_address, true) }}"
+  https: "{{ consul_addresses_https | default(consul_client_address, true) }}"
+  rpc: "{{ consul_addresses_rpc | default(consul_client_address, true) }}"
+  grpc: "{{ consul_addresses_grpc | default(consul_client_address, true) }}"
+
+
+# System user and group
+consul_manage_user: true
+consul_user: "consul"
+consul_manage_group: true
+consul_group: "consul"
+consul_systemd_restart: "on-failure"
+consul_systemd_restart_sec: 42
+consul_systemd_limit_nofile: 65536
+consul_systemd_unit_path: "/lib/systemd/system"
+
+# Consul settings
+
+consul_domain: "{{ lookup('env','CONSUL_DOMAIN') | default('consul', true) }}"
+consul_alt_domain: "{{ lookup('env','CONSUL_ALT_DOMAIN') | default('', true) }}"
+consul_node_meta: {}
+consul_node_role: "{{ lookup('env','CONSUL_NODE_ROLE') | default('client', true) }}"
+consul_recursors: "{{ lookup('env','CONSUL_RECURSORS') | default('[]', true) }}"
+
+# consul_bootstrap_expect_value: "{{ _consul_lan_servercount | int }}"
+consul_disable_update_check: false
+consul_enable_script_checks: false
+consul_enable_local_script_checks: false
+consul_raft_protocol: "3"
+consul_retry_join_skip_hosts: false
+consul_retry_interval: "30s"
+consul_retry_interval_wan: "30s"
+consul_retry_max: 10
+consul_retry_max_wan: 10
+
+

@@ -1,0 +1,18 @@
+---
+# File: user_group.yml - User and group settings
+
+# Add group
+- name: Add Consul group
+  group:
+    name: "{{ consul_group }}"
+    state: present
+  become: yes
+
+# Add user
+- name: Add Consul user
+  user:
+    name: "{{ consul_user }}"
+    comment: "Consul user"
+    group: "{{ consul_group }}"
+    system: true
+  become: yes

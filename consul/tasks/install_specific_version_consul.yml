@@ -1,0 +1,14 @@
+---
+# File: install_specific_version_consul.yml 
+
+- name: Download Consul binary specific version
+  get_url:
+    url: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
+    dest: "/home/ubuntu"
+  become: yes
+
+- name: Unzip Consul binary and move to /usr/bin/path
+  unarchive:
+    src: "consul_1.13.2_linux_amd64.zip" 
+    dest: "{{ consul_bin_path }}"
+  become: yes

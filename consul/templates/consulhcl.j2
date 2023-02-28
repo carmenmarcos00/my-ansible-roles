@@ -1,0 +1,31 @@
+datacenter = "{{ consul_datacenter }}"
+data_dir = "{{ consul_data_path }}"
+encrypt = "{{ encrypt }}"
+
+acl = {
+  enabled = {{ acl_enabled }}
+  default_policy = "{{ acl_default_policy }}"
+  enable_token_persistence = {{ acl_enable_token_persistence }}
+}
+
+tls {
+  defaults {
+    ca_file = "{{ tls_ca_file }}"
+    cert_file = "{{ tls_cert_file }}"
+    key_file = "{{ tls_key_file }}"
+
+    verify_incoming = {{ tls_verify_incoming }}
+    verify_outgoing = {{ tls_verify_outgoing }}
+  }
+
+  internal_rpc {
+    verify_server_hostname = {{ tls_verify_server_hostname }}
+  }
+
+}
+
+auto_encrypt {
+  allow_tls = {{ auto_encrypt_allow_tls }}
+}
+
+retry_join = [{{ retry_join }}]

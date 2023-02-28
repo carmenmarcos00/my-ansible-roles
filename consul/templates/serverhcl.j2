@@ -1,0 +1,21 @@
+server = true
+bootstrap_expect = {{ consul_bootstrap_expect }} #Number of servers in the cluster
+advertise_addr = "{{ self_current_host_ip }}"
+
+
+client_addr = "0.0.0.0"
+
+connect {
+enabled = true
+}
+addresses {
+grpc = "127.0.0.1"
+
+http = "0.0.0.0"
+}
+ports {
+grpc = 8502
+}
+ui_config {
+enabled = true
+}

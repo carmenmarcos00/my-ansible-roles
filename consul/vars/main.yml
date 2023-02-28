@@ -1,0 +1,22 @@
+---
+# vars file for consul
+install_packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - software-properties-common
+  - python3-pip
+  - virtualenv
+  - python3-setuptools
+  - default-jdk
+  - default-jre
+  - cpu-checker
+  - qemu-kvm 
+  - virt-manager 
+  - virtinst 
+  - libvirt-clients 
+  - bridge-utils 
+  - libvirt-daemon-system
+  - aptitude
+
+  
