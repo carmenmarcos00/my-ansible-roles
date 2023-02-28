@@ -61,9 +61,9 @@
     mode: 0644
     owner: root
     group: root
-  template:
-    src: consulhcl.j2
-    dest: "{{ consul_configd_path }}/consul.hcl"
+    template:
+      src: consulhcl.j2
+      dest: "{{ consul_configd_path }}/consul.hcl"
 
 # Consul service agent config
 - name: Create server.hcl
@@ -73,9 +73,9 @@
     mode: 0644
     owner: root
     group: root
-  template:
-    src: serverhcl.j2
-    dest: "{{ consul_configd_path }}/server.hcl"
+    template:
+      src: serverhcl.j2
+      dest: "{{ consul_configd_path }}/server.hcl"
 
 # Consul service declaration and config  
 - name: Create Consul service
@@ -85,9 +85,9 @@
     mode: 0644
     owner: consul
     group: consul
-  template:
-    src: consulservice.j2
-    dest: "{{ consul_service_path }}/consul.service"
+    template:
+      src: consulservice.j2
+      dest: "{{ consul_service_path }}/consul.service"
 
 
 ### If this server is the initial one:
@@ -123,11 +123,11 @@
     # Ask for encryption gossip code to the main server
     # Ask for certs and key for my machine to the main server
     # Configure ACL's according to what the main server created
-  - name: Fetch a file form remote host
-    fetch: 
-    src:
-    dest: 
-    flat: yes
+    # - name: Fetch a file form remote host
+    #fetch: 
+    #src:
+    #dest: 
+    #flat: yes
 
 
 ### Bring certificates from the main server
@@ -138,5 +138,5 @@
 ### Enable and start consul service
 
 ### Set ACL's
-- name: Set Consul ACL's
-  import_tasks: acl.yml
+#- name: Set Consul ACL's
+# import_tasks: acl.yml

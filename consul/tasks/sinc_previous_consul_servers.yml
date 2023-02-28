@@ -1,31 +1,20 @@
+- name: Add Consul GPG key
+  shell: 
+      cmd: curl --fail --silent --show-error --location https://apt.releases.hashicorp.com/gpg | \
+      gpg --dearmor | \
+      dd of=/usr/share/keyrings/hashicorp-archive-keyring.gpg
+      warn: false
+  become: yes
 
-- name: Read bootstrapped state
-  stat:
-    path: "{{ consul_bootstrap_state }}"
-  register: bootstrap_state
-  ignore_errors: true
-  tags: always
+- name: Add Consul Repository
+  shell: 
+      cmd: echo "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+      sudo tee -a /etc/apt/sources.list.d/hashicorp.list
+      warn: false
 
-
-- name: Include user and group settings
-  import_tasks: user_group.yml
-
-
-
-- name: Read gossip encryption key for servers that require it
-  set_fact:
-    consul_raw_key: "{{ lookup('file', '/tmp/consul_raw.key') }}"
-  no_log: true
-  when:
-    - consul_raw_key is not defined
-
-- name: Delete gossip encryption key file
-  file:
-    path: '/tmp/consul_raw.key'
-    state: absent
-  become: false
-  vars:
-    ansible_become: false
-  run_once: true
-  delegate_to: localhost
-  changed_when: false
+- name: Update apt and install consul
+  apt:
+    name: consul
+    state: latest
+    update_cache: true
+  become: true
