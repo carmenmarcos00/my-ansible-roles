@@ -1,0 +1,11 @@
+
+### If this server is not the bootstrap, then ask for certificates
+- name: Get encryption key and certificates if the node is a bootstrap server
+  block:
+    - name: Get encryption gossip key
+      synchronize:
+        src: rsync://{{ bootstrap_ip }}/{{ ca_and_keys_path }}
+        dest: /etc/consul.d/
+        private_key: /home/ubuntu/.ssh/cluster  # TODO: modular
+      delegate_to: "{{ inventory_hostname }}" # TODO: bootstrap node in the inventary
+      become: yes

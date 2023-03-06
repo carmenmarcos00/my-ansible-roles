@@ -7,7 +7,7 @@ consul_bootstrap_expect: "3"         # TODO: Not hardcoded
 consul_version: "1.13.2"
 consul_server_number: "2"            # Start = 0
 public_ip_server: "193.146.75.209"   # TODO: Not hardcoded
-
+bootstrap_server: true
 
 ### If latest Consul version has bugs
 consul_latest_bug: true
@@ -84,14 +84,6 @@ consul_systemd_restart: "on-failure"
 consul_systemd_restart_sec: 42
 consul_systemd_limit_nofile: 65536
 consul_systemd_unit_path: "/lib/systemd/system"
-
-# Consul settings
-
-consul_domain: "{{ lookup('env','CONSUL_DOMAIN') | default('consul', true) }}"
-consul_alt_domain: "{{ lookup('env','CONSUL_ALT_DOMAIN') | default('', true) }}"
-consul_node_meta: {}
-consul_node_role: "{{ lookup('env','CONSUL_NODE_ROLE') | default('client', true) }}"
-consul_recursors: "{{ lookup('env','CONSUL_RECURSORS') | default('[]', true) }}"
 
 # consul_bootstrap_expect_value: "{{ _consul_lan_servercount | int }}"
 consul_disable_update_check: false

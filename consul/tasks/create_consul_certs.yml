@@ -1,0 +1,24 @@
+- name: Create gossip encryption key
+  shell: 
+    cmd: consul keygen >> gossip.txt
+    warn: false
+  become: yes
+
+  # Register variable encrypt_token (only once)
+- name: Read the first line of the gossip.txt file
+  shell: head -n 1 /home/ubuntu/gossip.txt
+  register: encrypt_token
+
+  # Create CA (only once)
+- name: Create certificate authority
+  shell: 
+    cmd: consul tls ca create
+    warn: false
+  become: yes
+  
+  # Create certificates for the node (once per node)
+- name: Create certificates for nodes
+  shell: 
+    cmd: consul tls cert create -server -dc {{ consul_datacenter }} -domain consul
+    warn: false
+  become: yes

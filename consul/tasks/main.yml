@@ -22,15 +22,12 @@
   pip:
     name: netaddr
     extra_args: --user
-    delegate_to: 127.0.0.1
   become: false
 
 - name: Install netaddr dependency on controlling host (virtualenv)
   pip:
     name: netaddr
-    delegate_to: 127.0.0.1
   become: false
-
 
 ### Install consul in the target system 
 - name: Install consul in the target system
@@ -41,29 +38,45 @@
   import_tasks: install_specific_version_consul.yml
   when: consul_latest_bug == true
 
+
 ### Create Consul specific paths
 - name: Create Consul paths
   file:
     path: "{{ consul_configd_path }}"
     state: directory
     mode: 0755 
-    # Doubt: Change to root?
-    owner: consul
-    group: consul
+    owner: root
+    group: root
     recurse: yes
+  
+
+### Create Consul certs and encryption key when it is the boostrap node
+- name: Consul certs creation 
+  import_tasks: create_consul_certs.yml
+  when: bootstrap_server == true
+
+
+### Scp the certificates from bootstrap node to actual privisioning node
+- name: Consul certs and encryption key scp
+  import_tasks: scp_consul_certs.yml
+  when: bootstrap_server == false
+
+
 
 ### Create consul config files (consul, server, service)
 # Consul generic config
-- name: Create consul.hcl
-  file: 
-    path: "{{ consul_configd_path }}/consul.hcl"
-    state: touch
-    mode: 0644
-    owner: root
-    group: root
-    template:
+- name: Create consul.hcl with encryption key
+  vars:
+    encrypt: "{{encryption_key}}"
+  tasks:
+   - name: Create consul.cl
+     template:
       src: consulhcl.j2
       dest: "{{ consul_configd_path }}/consul.hcl"
+      mode: 0644
+      owner: root
+      group: root
+  become: yes
 
 # Consul service agent config
 - name: Create server.hcl
@@ -83,57 +96,18 @@
     path: "{{ consul_service_path }}/consul.service"
     state: touch
     mode: 0644
-    owner: consul
-    group: consul
+    owner: root
+    group: root
     template:
       src: consulservice.j2
       dest: "{{ consul_service_path }}/consul.service"
 
-
-### If this server is the initial one:
-    # Generate gossip encryption
-    # Generate tls cert and key for this machine and some others (until bootstrap expected)
-    # Generate ACL's
-- block:
-
-
-
-  - name: Create gossip encryption key
-    shell: 
-      cmd: consul keygen >> gossip.txt
-      warn: false
-    become: yes
-
-  - name: Create certificate authority
-    shell: 
-      cmd: consul tls ca create
-      wrn: false
-    become: yes
-  
-  - name: Create certificates for nodes
-    shell: 
-      cmd: consul tls cert create -server -dc {{ consul_datacenter }} -domain consul
-      warn: false
-    become: yes
-
-
-
-
-### else.
-    # Ask for encryption gossip code to the main server
-    # Ask for certs and key for my machine to the main server
     # Configure ACL's according to what the main server created
     # - name: Fetch a file form remote host
     #fetch: 
     #src:
     #dest: 
     #flat: yes
-
-
-### Bring certificates from the main server
-# Generate (in main server) tls_cert_file y tls_key_file if needed 
-# TODO
-
 
 ### Enable and start consul service
 

@@ -2,7 +2,7 @@
   shell: 
       cmd: curl --fail --silent --show-error --location https://apt.releases.hashicorp.com/gpg | \
       gpg --dearmor | \
-      dd of=/usr/share/keyrings/hashicorp-archive-keyring.gpg
+      sudo dd of=/usr/share/keyrings/hashicorp-archive-keyring.gpg
       warn: false
   become: yes
 
