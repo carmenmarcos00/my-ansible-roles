@@ -1,10 +1,10 @@
-- name: Config Vim with plugins
+- name: Install and configure Consul using Ansible role
   hosts: localhost
   gather_facts: yes
-  become: no
+  become: yes
 
   tasks:
-    - name: Configure Vim using role
+    - name: Install and configure Consul using Ansible role
       import_role:
         name: consul
 
