@@ -62,7 +62,6 @@
   when: bootstrap_server == false
 
 
-
 ### Create consul config files (consul, server, service)
 # Consul generic config
 - name: Create consul.hcl with encryption key
@@ -78,6 +77,7 @@
       group: root
   become: yes
 
+
 # Consul service agent config
 - name: Create server.hcl
   file: 
@@ -89,6 +89,7 @@
     template:
       src: serverhcl.j2
       dest: "{{ consul_configd_path }}/server.hcl"
+
 
 # Consul service declaration and config  
 - name: Create Consul service
