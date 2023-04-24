@@ -16,8 +16,9 @@
     warn: false
   become: yes
   
-  # Create certificates for the node (once per node)
-- name: Create certificates for nodes
+  # Create certificates for the node 
+  # (once per node, create as much as servers expected (to avoid ssh, just scp))
+- name: Create certificates for server nodes 
   shell: 
     cmd: consul tls cert create -server -dc {{ consul_datacenter }} -domain consul
     warn: false
